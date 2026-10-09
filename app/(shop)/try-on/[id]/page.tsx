@@ -15,6 +15,7 @@ import { useLocaleText } from "@/hooks/use-locale-text";
 import { CameraAccessError, requestCameraStream } from "@/lib/camera";
 
 type Landmark = { x: number; y: number };
+type ScreenPoint = { x: number; y: number };
 
 export default function TryOnPage() {
   const t = useLocaleText("tryOn");
@@ -25,6 +26,7 @@ export default function TryOnPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const animationRef = useRef<number>(0);
   const landmarkerRef = useRef<FaceLandmarker | null>(null);
+  const missedFramesRef = useRef(0);
   const [cameraOn, setCameraOn] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(t("start"));
@@ -34,9 +36,6 @@ export default function TryOnPage() {
   const [match, setMatch] = useState(95);
 
   function analyze(landmarks: Landmark[]) {
-    const left = landmarks[33];
-    const right = landmarks[263];
-    const bridge = landmarks[168];
     const forehead = landmarks[10];
     const chin = landmarks[152];
     const jaw = Math.abs(landmarks[234].x - landmarks[454].x);
@@ -46,13 +45,33 @@ export default function TryOnPage() {
     setFaceShape(shape);
     setMatch(product.faceShapes.includes(shape) ? 95 : 87);
     const video = videoRef.current;
-    if (!video) return;
-    const distance = Math.hypot((right.x - left.x) * video.clientWidth, (right.y - left.y) * video.clientHeight);
+    if (!video || !video.videoWidth || !video.videoHeight || !video.clientWidth || !video.clientHeight) return;
+
+    const scale = Math.max(video.clientWidth / video.videoWidth, video.clientHeight / video.videoHeight);
+    const renderedWidth = video.videoWidth * scale;
+    const renderedHeight = video.videoHeight * scale;
+    const cropX = (video.clientWidth - renderedWidth) / 2;
+    const cropY = (video.clientHeight - renderedHeight) / 2;
+    const toScreenPoint = (point: Landmark): ScreenPoint => ({
+      x: 1 - (point.x * renderedWidth + cropX) / video.clientWidth,
+      y: (point.y * renderedHeight + cropY) / video.clientHeight,
+    });
+    const leftEye = toScreenPoint(landmarks[33]);
+    const rightEye = toScreenPoint(landmarks[263]);
+    const centerX = (leftEye.x + rightEye.x) / 2;
+    const centerY = (leftEye.y + rightEye.y) / 2;
+    const eyeDistance = Math.hypot(
+      (rightEye.x - leftEye.x) * video.clientWidth,
+      (rightEye.y - leftEye.y) * video.clientHeight,
+    );
     setOverlay({
-      x: (1 - bridge.x) * 100,
-      y: bridge.y * 100,
-      scale: distance * 2.75 / 210,
-      angle: Math.atan2((right.y - left.y) * video.clientHeight, -(right.x - left.x) * video.clientWidth) * 180 / Math.PI,
+      x: centerX * 100,
+      y: centerY * 100,
+      scale: eyeDistance * 1.5 / 210,
+      angle: Math.atan2(
+        (rightEye.y - leftEye.y) * video.clientHeight,
+        (rightEye.x - leftEye.x) * video.clientWidth,
+      ) * 180 / Math.PI,
     });
   }
 
@@ -79,8 +98,14 @@ export default function TryOnPage() {
         const landmarker = landmarkerRef.current;
         if (currentVideo && landmarker && currentVideo.readyState >= 2) {
           const result = landmarker.detectForVideo(currentVideo, performance.now());
-          if (result.faceLandmarks[0]) analyze(result.faceLandmarks[0]);
-          else { setOverlay(null); setMessage(t("notFound")); }
+          if (result.faceLandmarks[0]) {
+            missedFramesRef.current = 0;
+            analyze(result.faceLandmarks[0]);
+          } else {
+            missedFramesRef.current += 1;
+            if (missedFramesRef.current > 15) setOverlay(null);
+            setMessage(t("notFound"));
+          }
         }
         animationRef.current = requestAnimationFrame(detect);
       };
@@ -100,6 +125,7 @@ export default function TryOnPage() {
     cancelAnimationFrame(animationRef.current);
     landmarkerRef.current?.close();
     landmarkerRef.current = null;
+    missedFramesRef.current = 0;
     const video = videoRef.current;
     if (video?.srcObject) (video.srcObject as MediaStream).getTracks().forEach((track) => track.stop());
     if (video) video.srcObject = null;
