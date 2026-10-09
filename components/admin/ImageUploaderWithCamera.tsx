@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Camera, ImagePlus, LoaderCircle, Star, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { CameraAccessError, requestCameraStream } from "@/lib/camera";
 
 type ImageUploaderWithCameraProps = {
   images: File[];
@@ -38,7 +39,7 @@ export function ImageUploaderWithCamera({ images, onChange, error, maxImages = 5
 
     async function openCamera() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const stream = await requestCameraStream({ video: true });
         if (!active) {
           stream.getTracks().forEach((track) => track.stop());
           return;
@@ -49,7 +50,17 @@ export function ImageUploaderWithCamera({ images, onChange, error, maxImages = 5
           await videoRef.current.play();
         }
       } catch (reason) {
-        if (active) setCameraError(reason instanceof Error ? reason.message : "No se pudo acceder a la cámara.");
+        if (active) {
+          const cameraMessages: Record<string, string> = {
+            secureContext: "Para usar la cámara, abre esta página en HTTPS o en localhost.",
+            unsupported: "Este navegador no permite acceder a la cámara.",
+            permissionDenied: "Permite el acceso a la cámara en los permisos del navegador y vuelve a intentarlo.",
+            notFound: "No se encontró una cámara disponible en este dispositivo.",
+            inUse: "La cámara está siendo usada por otra aplicación. Ciérrala e inténtalo de nuevo.",
+            failed: "No se pudo iniciar la cámara. Revisa los permisos y vuelve a intentarlo.",
+          };
+          setCameraError(reason instanceof CameraAccessError ? cameraMessages[reason.code] : "No se pudo iniciar la cámara.");
+        }
       } finally {
         if (active) setCameraLoading(false);
       }

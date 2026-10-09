@@ -262,6 +262,15 @@
     "liveVto": "LIVE TRY-ON",
     "notFound": "We couldn't find this product",
     "language": "Language",
-    "whatsapp": "Contact Lumiere_Optique on WhatsApp"
+    "whatsapp": "Contact Lumiere_Optique on WhatsApp",
+    "modelError": "We couldn't load the virtual try-on. Check your connection and try again.",
+    "camera": {
+      "secureContext": "Your browser only allows camera access over a secure connection. Open this site using HTTPS or localhost.",
+      "unsupported": "This browser doesn't support camera access.",
+      "permissionDenied": "Camera access was denied. Enable it in this site's browser permissions and try again.",
+      "notFound": "No camera was found on this device.",
+      "inUse": "The camera is being used by another app. Close it and try again.",
+      "failed": "The camera couldn't start. Check its permissions and try again."
+    }
   }
 }

@@ -262,6 +262,15 @@
     "liveVto": "VTO EN VIVO",
     "notFound": "No encontramos este producto",
     "language": "Idioma",
-    "whatsapp": "Consultar con Lumiere_Optique por WhatsApp"
+    "whatsapp": "Consultar con Lumiere_Optique por WhatsApp",
+    "modelError": "No pudimos cargar el probador virtual. Revisa tu conexión e inténtalo de nuevo.",
+    "camera": {
+      "secureContext": "El navegador solo permite usar la cámara en una conexión segura. Abre el sitio con HTTPS o en localhost.",
+      "unsupported": "Este navegador no permite acceder a la cámara.",
+      "permissionDenied": "No hay permiso para usar la cámara. Habilítalo en los permisos del sitio y vuelve a intentarlo.",
+      "notFound": "No se encontró una cámara disponible en este dispositivo.",
+      "inUse": "La cámara está siendo usada por otra aplicación. Ciérrala e inténtalo de nuevo.",
+      "failed": "No se pudo iniciar la cámara. Revisa sus permisos y vuelve a intentarlo."
+    }
   }
 }

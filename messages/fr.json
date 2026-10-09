@@ -262,6 +262,15 @@
     "liveVto": "ESSAYAGE EN DIRECT",
     "notFound": "Produit introuvable",
     "language": "Langue",
-    "whatsapp": "Contacter Lumiere_Optique sur WhatsApp"
+    "whatsapp": "Contacter Lumiere_Optique sur WhatsApp",
+    "modelError": "Impossible de charger l'essayage virtuel. Vérifiez votre connexion et réessayez.",
+    "camera": {
+      "secureContext": "Votre navigateur autorise la caméra uniquement via une connexion sécurisée. Ouvrez le site en HTTPS ou sur localhost.",
+      "unsupported": "Ce navigateur ne prend pas en charge l'accès à la caméra.",
+      "permissionDenied": "L'accès à la caméra a été refusé. Autorisez-le dans les paramètres du site, puis réessayez.",
+      "notFound": "Aucune caméra n'a été détectée sur cet appareil.",
+      "inUse": "La caméra est utilisée par une autre application. Fermez-la et réessayez.",
+      "failed": "Impossible de démarrer la caméra. Vérifiez ses autorisations et réessayez."
+    }
   }
 }

@@ -5,12 +5,14 @@ import { FaceLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
 import { Check, LoaderCircle, MousePointer2, RotateCcw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocaleText } from "@/hooks/use-locale-text";
+import { CameraAccessError, requestCameraStream } from "@/lib/camera";
 
 type Landmark = { x: number; y: number };
 type Point = { x: number; y: number };
 
 export function DipMeasurer({ onClose, onComplete }: { onClose: () => void; onComplete: (dip: number) => void }) {
   const t = useLocaleText("checkout");
+  const tCommon = useLocaleText("common");
   const videoRef = useRef<HTMLVideoElement>(null);
   const landmarkerRef = useRef<FaceLandmarker | null>(null);
   const animationRef = useRef<number>(0);
@@ -26,7 +28,7 @@ export function DipMeasurer({ onClose, onComplete }: { onClose: () => void; onCo
     let active = true;
     async function prepareCamera() {
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
+        stream = await requestCameraStream({ video: { facingMode: "user" }, audio: false });
         const video = videoRef.current;
         if (!video || !active) { stream.getTracks().forEach((track) => track.stop()); return; }
         video.srcObject = stream;
@@ -68,7 +70,7 @@ export function DipMeasurer({ onClose, onComplete }: { onClose: () => void; onCo
         };
         animationRef.current = requestAnimationFrame(detect);
       } catch (reason) {
-        setError(reason instanceof Error ? reason.message : t("dipError"));
+        setError(reason instanceof CameraAccessError ? tCommon(`camera.${reason.code}`) : t("dipError"));
         setLoading(false);
         if (stream) stream.getTracks().forEach((track) => track.stop());
       }
