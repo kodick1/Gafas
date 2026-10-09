@@ -56,18 +56,20 @@ export default function TryOnPage() {
       x: 1 - (point.x * renderedWidth + cropX) / video.clientWidth,
       y: (point.y * renderedHeight + cropY) / video.clientHeight,
     });
-    const leftEye = toScreenPoint(landmarks[33]);
-    const rightEye = toScreenPoint(landmarks[263]);
-    const centerX = (leftEye.x + rightEye.x) / 2;
-    const centerY = (leftEye.y + rightEye.y) / 2;
+    const eyeCorners = [toScreenPoint(landmarks[33]), toScreenPoint(landmarks[263])]
+      .sort((first, second) => first.x - second.x);
+    const [leftEye, rightEye] = eyeCorners;
+    const noseBridge = toScreenPoint(landmarks[168]);
     const eyeDistance = Math.hypot(
       (rightEye.x - leftEye.x) * video.clientWidth,
       (rightEye.y - leftEye.y) * video.clientHeight,
     );
+    const glassesScale = eyeDistance * 1.5 / 210;
+    const frameBridgeOffset = 9.5;
     setOverlay({
-      x: centerX * 100,
-      y: centerY * 100,
-      scale: eyeDistance * 1.5 / 210,
+      x: noseBridge.x * 100,
+      y: (noseBridge.y + frameBridgeOffset * glassesScale / video.clientHeight) * 100,
+      scale: glassesScale,
       angle: Math.atan2(
         (rightEye.y - leftEye.y) * video.clientHeight,
         (rightEye.x - leftEye.x) * video.clientWidth,
