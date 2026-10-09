@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #0a0a0a;
+  --color-muted: #77736d;
+  --color-canvas: #f5f2ed;
+  --color-line: #e9e3da;
+  --color-forest: #927849;
+  --color-lime: #c9a86a;
+  --font-sans: Inter, Arial, Helvetica, sans-serif;
+  --shadow-soft: 0 12px 40px rgba(10, 10, 10, .06);
+}
+
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #fff; color: #0a0a0a; }
+button, input, select, textarea { font: inherit; }
+::selection { background: #c9a86a; color: #0a0a0a; }
+.container-width { width: min(1280px, calc(100% - 48px)); margin-inline: auto; }
+.eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.product-shape { position: relative; width: 210px; height: 86px; display: flex; align-items: center; justify-content: center; gap: 8px; filter: drop-shadow(0 12px 10px rgba(31,39,36,.14)); transform: rotate(-8deg); }
+.product-shape::before { content: ""; position: absolute; height: 5px; width: 50px; left: 80px; top: 31px; border-radius: 5px; background: currentColor; }
+.product-lens { width: 91px; height: 72px; border: 9px solid currentColor; border-radius: 25px 25px 35px 35px; background: linear-gradient(135deg, rgba(255,255,255,.65), rgba(255,255,255,.08)); }
+.product-lens:first-child { border-radius: 27px 25px 36px 31px; }
+.product-lens:last-child { border-radius: 25px 27px 31px 36px; }
+.material-titanio .product-lens { border-width: 5px; border-radius: 24px; }
+.material-metal .product-lens { border-width: 4px; border-radius: 25px; }
+.material-madera .product-lens { border-color: #8a6748; }
+.lens-verde .product-lens { background: linear-gradient(135deg,rgba(44,94,76,.52),rgba(44,94,76,.12)); }
+.lens-ámbar .product-lens { background: linear-gradient(135deg,rgba(172,111,44,.56),rgba(172,111,44,.12)); }
+.lens-gris .product-lens { background: linear-gradient(135deg,rgba(65,72,75,.52),rgba(65,72,75,.12)); }
+.lens-transparente .product-lens { background: linear-gradient(135deg,rgba(255,255,255,.65),rgba(255,255,255,.08)); }
+.glasses-color-olive { color: #526653; }
+.glasses-color-black { color: #303432; }
+.glasses-color-honey { color: #a87945; }
+.glasses-color-burgundy { color: #744b50; }
+.glass-gradient { background-image: radial-gradient(ellipse at 50% 42%, rgba(201,168,106,.25) 0%, transparent 55%), linear-gradient(135deg,#f5f2ed,#ebe5dc); }
+@media (max-width: 640px) { .container-width { width: min(100% - 32px, 1280px); } }
